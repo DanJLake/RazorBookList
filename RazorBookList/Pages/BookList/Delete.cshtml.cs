@@ -1,20 +1,19 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RazorBookList.Model;
 
 namespace RazorBookList.Pages.BookList
 {
-    public class EditModel : PageModel
+    public class DeleteModel : PageModel
     {
         private readonly RazorBookList.Model.ApplicationDbContext _context;
 
-        public EditModel(RazorBookList.Model.ApplicationDbContext context)
+        public DeleteModel(RazorBookList.Model.ApplicationDbContext context)
         {
             _context = context;
         }
@@ -38,39 +37,22 @@ namespace RazorBookList.Pages.BookList
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(Book).State = EntityState.Modified;
+            Book = await _context.Book.FindAsync(id);
 
-            try
+            if (Book != null)
             {
+                _context.Book.Remove(Book);
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(Book.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
             }
 
             return RedirectToPage("./Index");
-        }
-
-        private bool BookExists(int id)
-        {
-            return _context.Book.Any(e => e.Id == id);
         }
     }
 }

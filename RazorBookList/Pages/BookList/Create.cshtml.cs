@@ -1,40 +1,44 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using RazorBookList.Model;
 
 namespace RazorBookList.Pages.BookList
 {
     public class CreateModel : PageModel
     {
-        private readonly ApplicationDbContext _db;
+        private readonly RazorBookList.Model.ApplicationDbContext _context;
 
-        public CreateModel(ApplicationDbContext db)
+        public CreateModel(RazorBookList.Model.ApplicationDbContext context)
         {
-            _db = db;
+            _context = context;
+        }
+
+        public IActionResult OnGet()
+        {
+            return Page();
         }
 
         [BindProperty]
         public Book Book { get; set; }
-        public void OnGet()
-        {
-        }
 
-        public async Task<IActionResult> OnPost()
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://aka.ms/RazorPagesCRUD.
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (ModelState.IsValid)
-            {
-                await _db.Book.AddAsync(Book);
-                await _db.SaveChangesAsync();
-                return RedirectToPage("Index");
-            }
-            else
+            if (!ModelState.IsValid)
             {
                 return Page();
             }
+
+            _context.Book.Add(Book);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
         }
     }
 }

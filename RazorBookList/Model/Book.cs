@@ -8,7 +8,7 @@ namespace RazorBookList.Model
 {
     public class Book
     {
-        //Set ID as identity column with [Key]
+        //Set ID as identity/primary key column with [Key]
         [Key]
         public int Id { get; set; }
 
